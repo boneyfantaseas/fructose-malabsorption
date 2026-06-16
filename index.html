@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fructosegehalt von Lebensmitteln</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 id="title">Fructosegehalt von Lebensmitteln</h1>
+            <p id="subtitle">Vergleich verschiedener Quellen zum Fructosegehalt</p>
+            <div class="controls">
+                <div class="lang-switch">
+                    <button onclick="setLang('de')" id="btn-de" class="active">DE</button>
+                    <button onclick="setLang('en')" id="btn-en">EN</button>
+                </div>
+                <div class="actions">
+                    <button onclick="selectAll()" id="btn-select-all">Alle auswählen</button>
+                    <button onclick="deselectAll()" id="btn-deselect-all">Auswahl aufheben</button>
+                    <button onclick="exportPDF()" id="btn-export" class="btn-primary">PDF exportieren</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="info-section">
+            <h2 id="info-title">Hinweise</h2>
+            <div class="info-box">
+                <p id="info-text-1">Die Werte in dieser Tabelle stammen aus verschiedenen Quellen und können sich unterscheiden. Unterschiede entstehen durch verschiedene Messmethoden, Reifegrade und Sorten der Lebensmittel.</p>
+                <p id="info-text-2">Einträge mit abweichenden Werten zwischen den Quellen sind <span class="conflict-marker">gelb markiert</span>.</p>
+                <p id="info-text-3">Alle Angaben in Gramm pro 100g Lebensmittel, sofern nicht anders angegeben.</p>
+            </div>
+        </section>
+
+        <section id="filter-section">
+            <h2 id="filter-title">Filter</h2>
+            <div class="filters">
+                <select id="category-filter" onchange="filterTable()">
+                    <option value="all" id="opt-all">Alle Kategorien</option>
+                    <option value="obst" id="opt-obst">Obst</option>
+                    <option value="gemuese" id="opt-gemuese">Gemüse</option>
+                    <option value="beeren" id="opt-beeren">Beeren</option>
+                    <option value="trockenfruechte" id="opt-trocken">Trockenfrüchte</option>
+                    <option value="getraenke" id="opt-getraenke">Getränke</option>
+                    <option value="sonstiges" id="opt-sonstiges">Sonstiges</option>
+                </select>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="conflict-only" onchange="filterTable()">
+                    <span id="label-conflicts">Nur abweichende Werte anzeigen</span>
+                </label>
+                <input type="text" id="search-input" placeholder="Suche..." oninput="filterTable()">
+            </div>
+        </section>
+
+        <section id="table-section">
+            <table id="food-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all-cb" onchange="toggleAll(this)"></th>
+                        <th id="th-food">Lebensmittel</th>
+                        <th id="th-category">Kategorie</th>
+                        <th id="th-fructose">Fructose (g/100g)</th>
+                        <th id="th-glucose">Glucose (g/100g)</th>
+                        <th id="th-ratio">F/G Verhältnis</th>
+                        <th id="th-sources">Quellen</th>
+                        <th id="th-conflict">Abweichung</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </section>
+
+        <section id="sources-section">
+            <h2 id="sources-title">Quellen</h2>
+            <ol id="sources-list">
+                <li><a href="https://foodintolerances.org/de/nahrungsbestandteile/fructose-nahrungstabellen" target="_blank">Food Intolerances – Fructose Nahrungstabellen</a> (foodintolerances.org)</li>
+                <li><a href="https://www.netdoktor.de/krankheiten/fruktoseintoleranz/tabelle/" target="_blank">NetDoktor – Fruktoseintoleranz Tabelle</a> (netdoktor.de, Quelle: Klinische Ernährungsmedizin, 2010)</li>
+                <li><a href="https://gastro-bw.ch/wp-content/uploads/2019/08/Fruktosemalabsorption.pdf" target="_blank">Gastro BW – Fruktosemalabsorption (PDF, 2019)</a></li>
+                <li><a href="https://www.infomedizin.de/fileadmin/user_upload/PDF/fructosegehalt-obst-gemuese.pdf" target="_blank">Infomedizin – Fructosegehalt Obst & Gemüse (PDF)</a></li>
+                <li><a href="https://www.aerztehaushiltrup-kinderaerzte.de/wp-content/uploads/2022/06/Fruktosemalabsorbtion.pdf" target="_blank">Ärztehaus Hiltrup – Fruktosemalabsorption (PDF, 2022)</a></li>
+                <li><a href="https://www.p7g.de/wp-content/uploads/2022/06/Fruktosetabelle.pdf" target="_blank">P7G – Fruktosetabelle (PDF, 2022)</a></li>
+            </ol>
+        </section>
+
+        <section id="conflicts-section">
+            <h2 id="conflicts-title">Abweichungen zwischen Quellen</h2>
+            <div id="conflicts-detail"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p id="footer-text">Die Angaben dienen nur zur Information und ersetzen keine medizinische Beratung. Bei Fructoseintoleranz wenden Sie sich an eine qualifizierte Ernährungsberatung.</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
