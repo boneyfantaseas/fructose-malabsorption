@@ -62,12 +62,12 @@
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="select-all-cb" onchange="toggleAll(this)"></th>
-                        <th id="th-food">Lebensmittel</th>
-                        <th id="th-category">Kategorie</th>
-                        <th id="th-fructose">Fructose (g/100g)</th>
-                        <th id="th-glucose">Glucose (g/100g)</th>
-                        <th id="th-ratio">F/G Verhältnis</th>
-                        <th id="th-sorbit">Sorbit (g/100g)</th>
+                        <th id="th-food" class="sortable" onclick="sortTable('food')">Lebensmittel <span class="sort-icon" id="sort-icon-food"></span></th>
+                        <th id="th-category" class="sortable" onclick="sortTable('category')">Kategorie <span class="sort-icon" id="sort-icon-category"></span></th>
+                        <th id="th-fructose" class="sortable" onclick="sortTable('fructose')">Fructose (g/100g) <span class="sort-icon" id="sort-icon-fructose"></span></th>
+                        <th id="th-glucose" class="sortable" onclick="sortTable('glucose')">Glucose (g/100g) <span class="sort-icon" id="sort-icon-glucose"></span></th>
+                        <th id="th-ratio" class="sortable" onclick="sortTable('ratio')">F/G Verhältnis <span class="sort-icon" id="sort-icon-ratio"></span></th>
+                        <th id="th-sorbit" class="sortable" onclick="sortTable('sorbit')">Sorbit (g/100g) <span class="sort-icon" id="sort-icon-sorbit"></span></th>
                         <th id="th-sources">Quellen</th>
                         <th id="th-conflict">Abweichung</th>
                     </tr>

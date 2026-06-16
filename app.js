@@ -214,17 +214,74 @@ function getRatioRange(item) {
 // === TABLE RENDERING ===
 const CATEGORY_ORDER = ["obst", "beeren", "trockenfruechte", "gemuese", "getraenke", "sonstiges"];
 
-function getSortedData() {
-    // Create indexed array, sort by category order then alphabetically
-    const indexed = FOOD_DATA.map((item, idx) => ({ item, idx }));
-    indexed.sort((a, b) => {
-        const catA = CATEGORY_ORDER.indexOf(a.item.category);
-        const catB = CATEGORY_ORDER.indexOf(b.item.category);
-        if (catA !== catB) return catA - catB;
-        const nameA = (a.item.name[currentLang] || a.item.name.de).toLowerCase();
-        const nameB = (b.item.name[currentLang] || b.item.name.de).toLowerCase();
-        return nameA.localeCompare(nameB, currentLang);
+// Table sort state
+let tableSortField = null; // null = default category grouping
+let tableSortDir = "asc";
+
+function sortTable(field) {
+    if (tableSortField === field) {
+        // Toggle direction, or reset on third click
+        if (tableSortDir === "asc") {
+            tableSortDir = "desc";
+        } else {
+            tableSortField = null;
+            tableSortDir = "asc";
+        }
+    } else {
+        tableSortField = field;
+        tableSortDir = "asc";
+    }
+    updateSortIcons();
+    renderTable();
+}
+
+function updateSortIcons() {
+    const fields = ["food", "category", "fructose", "glucose", "ratio", "sorbit"];
+    fields.forEach(f => {
+        const icon = document.getElementById("sort-icon-" + f);
+        if (icon) {
+            if (tableSortField === f) {
+                icon.textContent = tableSortDir === "asc" ? "▲" : "▼";
+            } else {
+                icon.textContent = "";
+            }
+        }
     });
+}
+
+function getSortedData() {
+    const indexed = FOOD_DATA.map((item, idx) => ({ item, idx }));
+
+    if (tableSortField) {
+        // Sort by selected column
+        indexed.sort((a, b) => {
+            const valA = getSortValue(a.item, tableSortField);
+            const valB = getSortValue(b.item, tableSortField);
+            let cmp;
+            if (typeof valA === "string" && typeof valB === "string") {
+                cmp = valA.localeCompare(valB, currentLang);
+            } else {
+                if (valA === -Infinity && valB === -Infinity) cmp = 0;
+                else if (valA === -Infinity) cmp = 1;
+                else if (valB === -Infinity) cmp = -1;
+                else if (valA === Infinity && valB === Infinity) cmp = 0;
+                else if (valA === Infinity) cmp = 1;
+                else if (valB === Infinity) cmp = -1;
+                else cmp = valA - valB;
+            }
+            return tableSortDir === "desc" ? -cmp : cmp;
+        });
+    } else {
+        // Default: sort by category order then alphabetically
+        indexed.sort((a, b) => {
+            const catA = CATEGORY_ORDER.indexOf(a.item.category);
+            const catB = CATEGORY_ORDER.indexOf(b.item.category);
+            if (catA !== catB) return catA - catB;
+            const nameA = (a.item.name[currentLang] || a.item.name.de).toLowerCase();
+            const nameB = (b.item.name[currentLang] || b.item.name.de).toLowerCase();
+            return nameA.localeCompare(nameB, currentLang);
+        });
+    }
     return indexed;
 }
 
@@ -245,8 +302,8 @@ function renderTable() {
         if (conflictOnly && !conflict) return;
         if (search && !name.toLowerCase().includes(search) && !item.name.de.toLowerCase().includes(search)) return;
 
-        // Category group header
-        if (item.category !== lastCategory) {
+        // Category group header (only when using default sort)
+        if (!tableSortField && item.category !== lastCategory) {
             lastCategory = item.category;
             const catLabel = t("categories")[item.category] || item.category;
             const headerTr = document.createElement("tr");

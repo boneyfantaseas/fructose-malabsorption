@@ -185,6 +185,22 @@ th {
     white-space: nowrap;
 }
 
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+th.sortable:hover {
+    background: #1e5c2e;
+}
+
+.sort-icon {
+    font-size: 0.7rem;
+    margin-left: 3px;
+    opacity: 0.9;
+}
+
 td {
     padding: 10px;
     border-bottom: 1px solid #eee;
