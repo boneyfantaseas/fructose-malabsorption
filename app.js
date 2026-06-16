@@ -1,4 +1,4 @@
-// Internationalization
+// === INTERNATIONALIZATION ===
 const i18n = {
     de: {
         title: "Fructosegehalt von Lebensmitteln",
@@ -7,7 +7,7 @@ const i18n = {
         deselectAll: "Auswahl aufheben",
         exportPdf: "PDF exportieren",
         infoTitle: "Hinweise",
-        info1: "Die Werte in dieser Tabelle stammen aus verschiedenen Quellen und können sich unterscheiden. Unterschiede entstehen durch verschiedene Messmethoden, Reifegrade und Sorten der Lebensmittel.",
+        info1: "Die Werte in dieser Tabelle stammen aus verschiedenen Quellen und können sich unterscheiden. Unterschiede entstehen durch verschiedene Messmethoden, Reifegrade und Sorten.",
         info2: 'Einträge mit abweichenden Werten zwischen den Quellen sind <span class="conflict-marker">gelb markiert</span>.',
         info3: "Alle Angaben in Gramm pro 100g Lebensmittel, sofern nicht anders angegeben.",
         filterTitle: "Filter",
@@ -25,16 +25,30 @@ const i18n = {
         thFructose: "Fructose (g/100g)",
         thGlucose: "Glucose (g/100g)",
         thRatio: "F/G Verhältnis",
+        thSorbit: "Sorbit (g/100g)",
         thSources: "Quellen",
         thConflict: "Abweichung",
         sourcesTitle: "Quellen",
         conflictsTitle: "Abweichungen zwischen Quellen",
-        footer: "Die Angaben dienen nur zur Information und ersetzen keine medizinische Beratung. Bei Fructoseintoleranz wenden Sie sich an eine qualifizierte Ernährungsberatung.",
+        conflictsMethodNote: "Methodik: Als relevante Abweichung gilt eine Differenz von mehr als 1g Fructose pro 100g zwischen den Quellen. Ein Eintrag wird nur als abweichend markiert, wenn weniger als 75% der Quellen übereinstimmen (d.h. bei 4 Quellen müssen mindestens 2 deutlich abweichen). Einzelne Ausreißer unter den Quellen werden somit nicht als Abweichung gewertet, da sie auf Messungenauigkeiten oder andere Sorten zurückzuführen sein können. Neuere Quellen werden bei der Darstellung bevorzugt.",
+        footer: "Die Angaben dienen nur zur Information und ersetzen keine medizinische Beratung.",
         pdfTitle: "Fructosegehalt von Lebensmitteln",
         pdfGenerated: "Erstellt am",
         yes: "Ja",
         no: "Nein",
-        categories: { obst: "Obst", gemuese: "Gemüse", beeren: "Beeren", trockenfruechte: "Trockenfrüchte", getraenke: "Getränke", sonstiges: "Sonstiges" }
+        exportDialogTitle: "PDF-Export Optionen",
+        exportColumns: "Spalten auswählen:",
+        colFood: "Lebensmittel",
+        colCategory: "Kategorie",
+        colFructose: "Fructose",
+        colGlucose: "Glucose",
+        colRatio: "F/G Verhältnis",
+        colSorbit: "Sorbit",
+        colSources: "Quellen",
+        colConflict: "Abweichung",
+        exportBtn: "PDF erzeugen",
+        cancelBtn: "Abbrechen",
+        categories: { obst:"Obst", gemuese:"Gemüse", beeren:"Beeren", trockenfruechte:"Trockenfrüchte", getraenke:"Getränke", sonstiges:"Sonstiges" }
     },
     en: {
         title: "Fructose Content of Foods",
@@ -43,7 +57,7 @@ const i18n = {
         deselectAll: "Deselect all",
         exportPdf: "Export PDF",
         infoTitle: "Notes",
-        info1: "Values in this table come from different sources and may vary. Differences arise from measurement methods, ripeness, and variety of foods.",
+        info1: "Values in this table come from different sources and may vary due to measurement methods, ripeness, and variety of foods.",
         info2: 'Entries with differing values between sources are <span class="conflict-marker">highlighted in yellow</span>.',
         info3: "All values in grams per 100g of food, unless otherwise noted.",
         filterTitle: "Filter",
@@ -61,16 +75,30 @@ const i18n = {
         thFructose: "Fructose (g/100g)",
         thGlucose: "Glucose (g/100g)",
         thRatio: "F/G Ratio",
+        thSorbit: "Sorbitol (g/100g)",
         thSources: "Sources",
         thConflict: "Conflict",
         sourcesTitle: "Sources",
         conflictsTitle: "Conflicts between sources",
-        footer: "This information is for reference only and does not replace medical advice. For fructose intolerance, consult a qualified nutritionist.",
+        conflictsMethodNote: "Methodology: A relevant conflict is defined as a difference of more than 1g fructose per 100g between sources. An entry is only flagged as conflicting if less than 75% of sources agree (i.e., with 4 sources, at least 2 must significantly differ). Single outliers among sources are not flagged, as they may be due to measurement inaccuracies or different cultivars. Newer sources are preferred in the presentation.",
+        footer: "This information is for reference only and does not replace medical advice.",
         pdfTitle: "Fructose Content of Foods",
         pdfGenerated: "Generated on",
         yes: "Yes",
         no: "No",
-        categories: { obst: "Fruit", gemuese: "Vegetables", beeren: "Berries", trockenfruechte: "Dried fruits", getraenke: "Beverages", sonstiges: "Other" }
+        exportDialogTitle: "PDF Export Options",
+        exportColumns: "Select columns:",
+        colFood: "Food",
+        colCategory: "Category",
+        colFructose: "Fructose",
+        colGlucose: "Glucose",
+        colRatio: "F/G Ratio",
+        colSorbit: "Sorbitol",
+        colSources: "Sources",
+        colConflict: "Conflict",
+        exportBtn: "Generate PDF",
+        cancelBtn: "Cancel",
+        categories: { obst:"Fruit", gemuese:"Vegetables", beeren:"Berries", trockenfruechte:"Dried fruits", getraenke:"Beverages", sonstiges:"Other" }
     }
 };
 
@@ -86,9 +114,7 @@ function setLang(lang) {
     renderConflicts();
 }
 
-function t(key) {
-    return i18n[currentLang][key] || key;
-}
+function t(key) { return i18n[currentLang][key] || key; }
 
 function updateUI() {
     document.getElementById("title").textContent = t("title");
@@ -115,33 +141,39 @@ function updateUI() {
     document.getElementById("th-fructose").textContent = t("thFructose");
     document.getElementById("th-glucose").textContent = t("thGlucose");
     document.getElementById("th-ratio").textContent = t("thRatio");
+    document.getElementById("th-sorbit").textContent = t("thSorbit");
     document.getElementById("th-sources").textContent = t("thSources");
     document.getElementById("th-conflict").textContent = t("thConflict");
     document.getElementById("sources-title").textContent = t("sourcesTitle");
     document.getElementById("conflicts-title").textContent = t("conflictsTitle");
+    document.getElementById("conflicts-method").textContent = t("conflictsMethodNote");
     document.getElementById("footer-text").textContent = t("footer");
 }
 
+// === CONFLICT DETECTION ===
+// A conflict exists when fructose values differ by >1g AND less than 75% of sources agree
 function hasConflict(item) {
     const fValues = Object.values(item.values).map(v => v.f).filter(v => v !== null && v !== undefined);
     if (fValues.length < 2) return false;
     const min = Math.min(...fValues);
     const max = Math.max(...fValues);
-    return (max - min) > 1.0;
+    if ((max - min) <= 1.0) return false;
+    // Check 75% rule: count how many values are within 1g of the median
+    const sorted = [...fValues].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const agreeCount = fValues.filter(v => Math.abs(v - median) <= 1.0).length;
+    const agreePercent = agreeCount / fValues.length;
+    // Only flag as conflict if LESS than 75% agree
+    return agreePercent < 0.75;
 }
 
-function getBestValue(item) {
-    const sources = Object.keys(item.values).map(Number);
-    let bestSource = sources[0];
-    let bestYear = SOURCES[sources[0]].year || 0;
-    for (const s of sources) {
-        const year = SOURCES[s].year || 0;
-        if (year > bestYear) {
-            bestYear = year;
-            bestSource = s;
-        }
-    }
-    return { source: bestSource, ...item.values[bestSource] };
+function getSorbitRange(item) {
+    const sValues = Object.values(item.values).map(v => v.s).filter(v => v !== null && v !== undefined);
+    if (sValues.length === 0) return "-";
+    const min = Math.min(...sValues);
+    const max = Math.max(...sValues);
+    if (min === max || (max - min) < 0.1) return min.toFixed(1);
+    return min.toFixed(1) + " – " + max.toFixed(1);
 }
 
 function getFructoseRange(item) {
@@ -171,18 +203,17 @@ function getRatioRange(item) {
     return min.toFixed(2) + " – " + max.toFixed(2);
 }
 
+// === TABLE RENDERING ===
 function renderTable() {
     const tbody = document.getElementById("table-body");
     const categoryFilter = document.getElementById("category-filter").value;
     const conflictOnly = document.getElementById("conflict-only").checked;
     const search = document.getElementById("search-input").value.toLowerCase();
-
     tbody.innerHTML = "";
 
     FOOD_DATA.forEach((item, idx) => {
         const name = item.name[currentLang] || item.name.de;
         const conflict = hasConflict(item);
-
         if (categoryFilter !== "all" && item.category !== categoryFilter) return;
         if (conflictOnly && !conflict) return;
         if (search && !name.toLowerCase().includes(search) && !item.name.de.toLowerCase().includes(search)) return;
@@ -191,7 +222,6 @@ function renderTable() {
         const sourceBadges = sourceIds.map(id =>
             '<span class="source-badge" title="' + SOURCES[id].name + '">[' + id + ']</span>'
         ).join("");
-
         const catLabel = t("categories")[item.category] || item.category;
 
         const tr = document.createElement("tr");
@@ -203,6 +233,7 @@ function renderTable() {
             <td>${getFructoseRange(item)}</td>
             <td>${getGlucoseRange(item)}</td>
             <td>${getRatioRange(item)}</td>
+            <td>${getSorbitRange(item)}</td>
             <td><span class="source-badges">${sourceBadges}</span></td>
             <td>${conflict ? '<span class="conflict-icon">⚠️</span>' : '✓'}</td>
         `;
@@ -210,27 +241,30 @@ function renderTable() {
     });
 }
 
+// === CONFLICTS SECTION ===
 function renderConflicts() {
     const container = document.getElementById("conflicts-detail");
     const conflicts = FOOD_DATA.filter(hasConflict);
 
     if (conflicts.length === 0) {
-        container.innerHTML = `<p>${currentLang === "de" ? "Keine wesentlichen Abweichungen gefunden." : "No significant conflicts found."}</p>`;
+        container.innerHTML = `<p>${currentLang === "de" ? "Keine relevanten Abweichungen nach der 75%-Regel gefunden." : "No relevant conflicts found after applying the 75% rule."}</p>`;
         return;
     }
 
     container.innerHTML = conflicts.map(item => {
         const name = item.name[currentLang] || item.name.de;
-        const valuesHtml = Object.entries(item.values).map(([srcId, v]) => {
-            return `<div class="conflict-value"><span class="source-name">[${srcId}] ${SOURCES[srcId].name}:</span> Fructose: ${v.f !== null ? v.f + "g" : "–"}${v.g !== null ? ", Glucose: " + v.g + "g" : ""}${v.r !== null ? ", F/G: " + v.r : ""}</div>`;
-        }).join("");
+        const valuesHtml = Object.entries(item.values)
+            .filter(([, v]) => v.f !== null && v.f !== undefined)
+            .sort((a, b) => (SOURCES[b[0]].year || 0) - (SOURCES[a[0]].year || 0))
+            .map(([srcId, v]) => {
+                const yearTag = SOURCES[srcId].year ? ` (${SOURCES[srcId].year})` : "";
+                return `<div class="conflict-value"><span class="source-name">[${srcId}] ${SOURCES[srcId].name}${yearTag}:</span> F: ${v.f}g${v.g !== null && v.g !== undefined ? ", G: " + v.g + "g" : ""}${v.s !== null && v.s !== undefined ? ", S: " + v.s + "g" : ""}</div>`;
+            }).join("");
         return `<div class="conflict-item"><h3>${name}</h3><div class="conflict-values">${valuesHtml}</div></div>`;
     }).join("");
 }
 
-function filterTable() {
-    renderTable();
-}
+function filterTable() { renderTable(); }
 
 function selectAll() {
     document.querySelectorAll(".row-cb").forEach(cb => cb.checked = true);
@@ -246,63 +280,123 @@ function toggleAll(masterCb) {
     document.querySelectorAll(".row-cb").forEach(cb => cb.checked = masterCb.checked);
 }
 
+// === PDF EXPORT WITH COLUMN SELECTION ===
 function exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    // Show modal
+    const modal = document.getElementById("export-modal");
+    modal.style.display = "flex";
+    document.getElementById("modal-title").textContent = t("exportDialogTitle");
+    document.getElementById("modal-col-label").textContent = t("exportColumns");
+    document.getElementById("modal-export-btn").textContent = t("exportBtn");
+    document.getElementById("modal-cancel-btn").textContent = t("cancelBtn");
+    document.getElementById("lbl-col-food").textContent = t("colFood");
+    document.getElementById("lbl-col-category").textContent = t("colCategory");
+    document.getElementById("lbl-col-fructose").textContent = t("colFructose");
+    document.getElementById("lbl-col-glucose").textContent = t("colGlucose");
+    document.getElementById("lbl-col-ratio").textContent = t("colRatio");
+    document.getElementById("lbl-col-sorbit").textContent = t("colSorbit");
+    document.getElementById("lbl-col-sources").textContent = t("colSources");
+    document.getElementById("lbl-col-conflict").textContent = t("colConflict");
+}
+
+function cancelExport() {
+    document.getElementById("export-modal").style.display = "none";
+}
+
+function doExport() {
+    const modal = document.getElementById("export-modal");
+    modal.style.display = "none";
+
+    const cols = {
+        food: document.getElementById("col-food").checked,
+        category: document.getElementById("col-category").checked,
+        fructose: document.getElementById("col-fructose").checked,
+        glucose: document.getElementById("col-glucose").checked,
+        ratio: document.getElementById("col-ratio").checked,
+        sorbit: document.getElementById("col-sorbit").checked,
+        sources: document.getElementById("col-sources").checked,
+        conflict: document.getElementById("col-conflict").checked
+    };
 
     const selectedIndices = [];
     document.querySelectorAll(".row-cb:checked").forEach(cb => {
         selectedIndices.push(parseInt(cb.dataset.idx));
     });
-
     const dataToExport = selectedIndices.length > 0
         ? selectedIndices.map(i => FOOD_DATA[i])
         : FOOD_DATA;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
     doc.setFontSize(16);
     doc.text(t("pdfTitle"), 14, 15);
     doc.setFontSize(9);
     doc.text(t("pdfGenerated") + ": " + new Date().toLocaleDateString(currentLang === "de" ? "de-DE" : "en-US"), 14, 22);
 
-    const headers = [[t("thFood"), t("thCategory"), t("thFructose"), t("thGlucose"), t("thRatio"), t("thSources"), t("thConflict")]];
+    const headers = [];
+    if (cols.food) headers.push(t("colFood"));
+    if (cols.category) headers.push(t("colCategory"));
+    if (cols.fructose) headers.push(t("colFructose"));
+    if (cols.glucose) headers.push(t("colGlucose"));
+    if (cols.ratio) headers.push(t("colRatio"));
+    if (cols.sorbit) headers.push(t("colSorbit"));
+    if (cols.sources) headers.push(t("colSources"));
+    if (cols.conflict) headers.push(t("colConflict"));
+
     const rows = dataToExport.map(item => {
+        const row = [];
         const name = item.name[currentLang] || item.name.de;
         const catLabel = t("categories")[item.category] || item.category;
         const sourceIds = Object.keys(item.values).map(Number).join(", ");
         const conflict = hasConflict(item) ? t("yes") : t("no");
-        return [name, catLabel, getFructoseRange(item), getGlucoseRange(item), getRatioRange(item), sourceIds, conflict];
+        if (cols.food) row.push(name);
+        if (cols.category) row.push(catLabel);
+        if (cols.fructose) row.push(getFructoseRange(item));
+        if (cols.glucose) row.push(getGlucoseRange(item));
+        if (cols.ratio) row.push(getRatioRange(item));
+        if (cols.sorbit) row.push(getSorbitRange(item));
+        if (cols.sources) row.push(sourceIds);
+        if (cols.conflict) row.push(conflict);
+        return row;
     });
 
     doc.autoTable({
-        head: headers,
+        head: [headers],
         body: rows,
         startY: 27,
         styles: { fontSize: 8, cellPadding: 2 },
         headStyles: { fillColor: [44, 122, 63] },
         alternateRowStyles: { fillColor: [245, 250, 245] },
         didParseCell: function(data) {
-            if (data.section === "body" && data.column.index === 6 && data.cell.raw === t("yes")) {
-                data.cell.styles.fillColor = [255, 243, 205];
-                data.cell.styles.textColor = [230, 81, 0];
+            if (cols.conflict && data.section === "body") {
+                const conflictColIdx = headers.indexOf(t("colConflict"));
+                if (data.column.index === conflictColIdx && data.cell.raw === t("yes")) {
+                    data.cell.styles.fillColor = [255, 243, 205];
+                    data.cell.styles.textColor = [230, 81, 0];
+                }
             }
         }
     });
 
-    // Add sources page
+    // Sources page
     doc.addPage();
     doc.setFontSize(14);
     doc.text(t("sourcesTitle"), 14, 15);
     doc.setFontSize(9);
     let y = 25;
     Object.entries(SOURCES).forEach(([id, src]) => {
-        doc.text("[" + id + "] " + src.name + " - " + src.url, 14, y);
-        y += 6;
+        doc.text("[" + id + "] " + src.name + (src.year ? " (" + src.year + ")" : ""), 14, y);
+        doc.setTextColor(0, 100, 0);
+        doc.text("    " + src.url, 14, y + 4);
+        doc.setTextColor(0, 0, 0);
+        y += 10;
     });
 
     doc.save("fructosegehalt-lebensmittel.pdf");
 }
 
-// Initialize
+// === INIT ===
 document.addEventListener("DOMContentLoaded", function() {
     renderTable();
     renderConflicts();
