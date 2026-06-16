@@ -203,6 +203,23 @@ tr.conflict:hover {
     background: #fff3cd;
 }
 
+tr.category-header {
+    background: #e8f5e9;
+}
+
+tr.category-header:hover {
+    background: #e8f5e9;
+}
+
+.category-header-cell {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #2c7a3f;
+    padding: 10px 12px !important;
+    border-bottom: 2px solid #4caf50;
+    letter-spacing: 0.02em;
+}
+
 .source-badges {
     display: flex;
     gap: 3px;

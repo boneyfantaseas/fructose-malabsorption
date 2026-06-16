@@ -204,6 +204,22 @@ function getRatioRange(item) {
 }
 
 // === TABLE RENDERING ===
+const CATEGORY_ORDER = ["obst", "beeren", "trockenfruechte", "gemuese", "getraenke", "sonstiges"];
+
+function getSortedData() {
+    // Create indexed array, sort by category order then alphabetically
+    const indexed = FOOD_DATA.map((item, idx) => ({ item, idx }));
+    indexed.sort((a, b) => {
+        const catA = CATEGORY_ORDER.indexOf(a.item.category);
+        const catB = CATEGORY_ORDER.indexOf(b.item.category);
+        if (catA !== catB) return catA - catB;
+        const nameA = (a.item.name[currentLang] || a.item.name.de).toLowerCase();
+        const nameB = (b.item.name[currentLang] || b.item.name.de).toLowerCase();
+        return nameA.localeCompare(nameB, currentLang);
+    });
+    return indexed;
+}
+
 function renderTable() {
     const tbody = document.getElementById("table-body");
     const categoryFilter = document.getElementById("category-filter").value;
@@ -211,12 +227,25 @@ function renderTable() {
     const search = document.getElementById("search-input").value.toLowerCase();
     tbody.innerHTML = "";
 
-    FOOD_DATA.forEach((item, idx) => {
+    const sorted = getSortedData();
+    let lastCategory = null;
+
+    sorted.forEach(({ item, idx }) => {
         const name = item.name[currentLang] || item.name.de;
         const conflict = hasConflict(item);
         if (categoryFilter !== "all" && item.category !== categoryFilter) return;
         if (conflictOnly && !conflict) return;
         if (search && !name.toLowerCase().includes(search) && !item.name.de.toLowerCase().includes(search)) return;
+
+        // Category group header
+        if (item.category !== lastCategory) {
+            lastCategory = item.category;
+            const catLabel = t("categories")[item.category] || item.category;
+            const headerTr = document.createElement("tr");
+            headerTr.classList.add("category-header");
+            headerTr.innerHTML = `<td colspan="9" class="category-header-cell">${catLabel}</td>`;
+            tbody.appendChild(headerTr);
+        }
 
         const sourceIds = Object.keys(item.values).map(Number);
         const sourceBadges = sourceIds.map(id =>
