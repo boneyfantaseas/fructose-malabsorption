@@ -427,6 +427,28 @@ function doExport() {
         });
     }
 
+    // Filter out entries that have no numeric values for any selected numeric column
+    const numericColsSelected = [
+        cols.fructose && "fructose",
+        cols.glucose && "glucose",
+        cols.ratio && "ratio",
+        cols.sorbit && "sorbit"
+    ].filter(Boolean);
+
+    if (numericColsSelected.length > 0) {
+        dataToExport = dataToExport.filter(item => {
+            // Keep item if it has at least one numeric value in any selected numeric column
+            return numericColsSelected.some(col => {
+                const values = Object.values(item.values);
+                if (col === "fructose") return values.some(v => v.f !== null && v.f !== undefined);
+                if (col === "glucose") return values.some(v => v.g !== null && v.g !== undefined);
+                if (col === "ratio") return values.some(v => v.r !== null && v.r !== undefined);
+                if (col === "sorbit") return values.some(v => v.s !== null && v.s !== undefined);
+                return false;
+            });
+        });
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
