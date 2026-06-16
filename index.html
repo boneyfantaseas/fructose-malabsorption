@@ -110,6 +110,12 @@
                     <label><input type="checkbox" id="col-sources" checked> <span id="lbl-col-sources">Quellen</span></label>
                     <label><input type="checkbox" id="col-conflict"> <span id="lbl-col-conflict">Abweichung</span></label>
                 </div>
+                <p id="modal-sort-label" class="modal-section-label">Sortierung:</p>
+                <div class="modal-sort">
+                    <select id="sort-field"></select>
+                    <label class="radio-label"><input type="radio" name="sort-dir" value="asc" checked> <span id="lbl-sort-asc">Aufsteigend</span></label>
+                    <label class="radio-label"><input type="radio" name="sort-dir" value="desc"> <span id="lbl-sort-desc">Absteigend</span></label>
+                </div>
                 <div class="modal-actions">
                     <button onclick="doExport()" id="modal-export-btn" class="btn-primary">PDF erzeugen</button>
                     <button onclick="cancelExport()" id="modal-cancel-btn">Abbrechen</button>

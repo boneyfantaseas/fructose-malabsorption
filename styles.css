@@ -389,6 +389,37 @@ footer {
     justify-content: flex-end;
 }
 
+.modal-section-label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.modal-sort {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.modal-sort select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
 .modal-actions button {
     padding: 10px 20px;
     border: 1px solid #ddd;

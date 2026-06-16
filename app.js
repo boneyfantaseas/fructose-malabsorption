@@ -48,6 +48,10 @@ const i18n = {
         colConflict: "Abweichung",
         exportBtn: "PDF erzeugen",
         cancelBtn: "Abbrechen",
+        sortLabel: "Sortierung:",
+        sortNone: "Keine (nach Kategorie)",
+        sortAsc: "Aufsteigend",
+        sortDesc: "Absteigend",
         categories: { obst:"Obst", gemuese:"Gemüse", beeren:"Beeren", trockenfruechte:"Trockenfrüchte", getraenke:"Getränke", sonstiges:"Sonstiges" }
     },
     en: {
@@ -98,6 +102,10 @@ const i18n = {
         colConflict: "Conflict",
         exportBtn: "Generate PDF",
         cancelBtn: "Cancel",
+        sortLabel: "Sort by:",
+        sortNone: "None (by category)",
+        sortAsc: "Ascending",
+        sortDesc: "Descending",
         categories: { obst:"Fruit", gemuese:"Vegetables", beeren:"Berries", trockenfruechte:"Dried fruits", getraenke:"Beverages", sonstiges:"Other" }
     }
 };
@@ -309,13 +317,39 @@ function toggleAll(masterCb) {
     document.querySelectorAll(".row-cb").forEach(cb => cb.checked = masterCb.checked);
 }
 
-// === PDF EXPORT WITH COLUMN SELECTION ===
+// === PDF EXPORT WITH COLUMN SELECTION AND SORTING ===
+
+// Helper: get numeric sort value for an item by field
+// For fructose, glucose, sorbit: use MAX value (Oberwert)
+// For ratio: use MIN value (Unterwert)
+function getSortValue(item, field) {
+    const values = Object.values(item.values);
+    if (field === "fructose") {
+        const nums = values.map(v => v.f).filter(v => v !== null && v !== undefined);
+        return nums.length > 0 ? Math.max(...nums) : -Infinity;
+    } else if (field === "glucose") {
+        const nums = values.map(v => v.g).filter(v => v !== null && v !== undefined);
+        return nums.length > 0 ? Math.max(...nums) : -Infinity;
+    } else if (field === "sorbit") {
+        const nums = values.map(v => v.s).filter(v => v !== null && v !== undefined);
+        return nums.length > 0 ? Math.max(...nums) : -Infinity;
+    } else if (field === "ratio") {
+        const nums = values.map(v => v.r).filter(v => v !== null && v !== undefined);
+        return nums.length > 0 ? Math.min(...nums) : Infinity;
+    } else if (field === "food") {
+        return (item.name[currentLang] || item.name.de).toLowerCase();
+    } else if (field === "category") {
+        return item.category;
+    }
+    return 0;
+}
+
 function exportPDF() {
-    // Show modal
     const modal = document.getElementById("export-modal");
     modal.style.display = "flex";
     document.getElementById("modal-title").textContent = t("exportDialogTitle");
     document.getElementById("modal-col-label").textContent = t("exportColumns");
+    document.getElementById("modal-sort-label").textContent = t("sortLabel");
     document.getElementById("modal-export-btn").textContent = t("exportBtn");
     document.getElementById("modal-cancel-btn").textContent = t("cancelBtn");
     document.getElementById("lbl-col-food").textContent = t("colFood");
@@ -326,6 +360,19 @@ function exportPDF() {
     document.getElementById("lbl-col-sorbit").textContent = t("colSorbit");
     document.getElementById("lbl-col-sources").textContent = t("colSources");
     document.getElementById("lbl-col-conflict").textContent = t("colConflict");
+    // Update sort dropdown options
+    const sortSelect = document.getElementById("sort-field");
+    sortSelect.innerHTML = `
+        <option value="none">${t("sortNone")}</option>
+        <option value="food">${t("colFood")}</option>
+        <option value="category">${t("colCategory")}</option>
+        <option value="fructose">${t("colFructose")}</option>
+        <option value="glucose">${t("colGlucose")}</option>
+        <option value="ratio">${t("colRatio")}</option>
+        <option value="sorbit">${t("colSorbit")}</option>
+    `;
+    document.getElementById("lbl-sort-asc").textContent = t("sortAsc");
+    document.getElementById("lbl-sort-desc").textContent = t("sortDesc");
 }
 
 function cancelExport() {
@@ -347,13 +394,38 @@ function doExport() {
         conflict: document.getElementById("col-conflict").checked
     };
 
+    const sortField = document.getElementById("sort-field").value;
+    const sortDir = document.querySelector('input[name="sort-dir"]:checked').value;
+
     const selectedIndices = [];
     document.querySelectorAll(".row-cb:checked").forEach(cb => {
         selectedIndices.push(parseInt(cb.dataset.idx));
     });
-    const dataToExport = selectedIndices.length > 0
+    let dataToExport = selectedIndices.length > 0
         ? selectedIndices.map(i => FOOD_DATA[i])
-        : FOOD_DATA;
+        : [...FOOD_DATA];
+
+    // Apply sorting
+    if (sortField !== "none") {
+        dataToExport = [...dataToExport].sort((a, b) => {
+            const valA = getSortValue(a, sortField);
+            const valB = getSortValue(b, sortField);
+            let cmp;
+            if (typeof valA === "string" && typeof valB === "string") {
+                cmp = valA.localeCompare(valB, currentLang);
+            } else {
+                // Handle -Infinity / Infinity: push items without values to end
+                if (valA === -Infinity && valB === -Infinity) cmp = 0;
+                else if (valA === -Infinity) cmp = 1;
+                else if (valB === -Infinity) cmp = -1;
+                else if (valA === Infinity && valB === Infinity) cmp = 0;
+                else if (valA === Infinity) cmp = 1;
+                else if (valB === Infinity) cmp = -1;
+                else cmp = valA - valB;
+            }
+            return sortDir === "desc" ? -cmp : cmp;
+        });
+    }
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
