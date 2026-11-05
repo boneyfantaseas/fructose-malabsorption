@@ -88,7 +88,7 @@ const FOOD_DATA = [
     { name:{de:"Bohnen, grün",en:"Green beans"}, category:"gemuese", values:{1:{f:1,g:1,r:1.4},3:{f:1.31,g:0.96,r:1.36},9:{f:1.39,g:1.51,r:null},10:{f:1.28,g:0.81,r:null}}},
     { name:{de:"Broccoli",en:"Broccoli"}, category:"gemuese", values:{1:{f:1,g:1,r:1.1},3:{f:1.04,g:0.94,r:1.10},5:{f:1.1,g:0.7,r:null},9:{f:0.68,g:0.49,r:null},10:{f:1.05,g:0.93,r:null}}},
     { name:{de:"Chicorée",en:"Chicory"}, category:"gemuese", values:{3:{f:0.68,g:1.12,r:0.61}}},
-    { name:{de:"Erbsen",en:"Peas"}, category:"gemuese", values:{3:{f:0.07,g:null,r:null},5:{f:3,g:3,r:null},9:{f:0.39,g:0.12,r:null},10:{f:0.16,g:0.18,r:null}}},
+    { name:{de:"Erbsen",en:"Peas"}, category:"gemuese", values:{3:{f:0.07,g:null,r:null},9:{f:0.39,g:0.12,r:null},10:{f:0.16,g:0.18,r:null}}},
     { name:{de:"Fenchel",en:"Fennel"}, category:"gemuese", values:{1:{f:1,g:1,r:0.8},3:{f:1.06,g:1.26,r:0.84},10:{f:1.02,g:1.1,r:null}}},
     { name:{de:"Gurke",en:"Cucumber"}, category:"gemuese", values:{1:{f:1,g:1,r:1.0},3:{f:0.86,g:0.89,r:0.96},7:{f:0.9,g:0.9},9:{f:0.87,g:0.76,r:null},10:{f:0.87,g:0.68,r:null}}},
     { name:{de:"Karotten",en:"Carrots"}, category:"gemuese", values:{1:{f:1,g:1,r:0.9},3:{f:1.31,g:1.40,r:0.94},7:{f:0.8,g:0.8},9:{f:0.55,g:0.59,r:null},10:{f:1.48,g:1.69,r:null}}},
@@ -137,8 +137,8 @@ const FOOD_DATA = [
     { name:{de:"Müsliriegel",en:"Muesli bar"}, category:"sonstiges", values:{2:{f:3.6,g:null,r:null}}},
     { name:{de:"Butterkekse",en:"Butter biscuits"}, category:"sonstiges", values:{2:{f:9.6,g:null,r:null}}},
     { name:{de:"Agavensirup",en:"Agave syrup"}, category:"sonstiges", values:{5:{f:56,g:12,r:null},9:{f:55.6,g:12.43,r:null}}},
-    { name:{de:"Ahornsirup",en:"Maple syrup"}, category:"sonstiges", values:{5:{f:30,g:30,r:null},9:{f:0.52,g:1.6,r:null}}},
-    { name:{de:"Cashew",en:"Cashew"}, category:"sonstiges", values:{5:{f:2.9,g:3,r:null},9:{f:0.05,g:0.05,r:null}}},
+    { name:{de:"Ahornsirup",en:"Maple syrup"}, category:"sonstiges", values:{9:{f:0.52,g:1.6,r:null}}},
+    { name:{de:"Cashew",en:"Cashew"}, category:"sonstiges", values:{9:{f:0.05,g:0.05,r:null}}},
     // === NEUE EINTRÄGE AUS WEITEREN QUELLEN ===
     // Gemüse und Sonstiges (Quelle 7: Exploration Dig. Dis. 2024)
     { name:{de:"Rote Beete",en:"Beetroot"}, category:"gemuese", values:{3:{f:0.52,g:null,r:null},7:{f:0.3,g:0.3},10:{f:0.05,g:0.13,r:null}}},
