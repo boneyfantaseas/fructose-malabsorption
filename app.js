@@ -351,10 +351,10 @@ function renderTable() {
             <td><input type="checkbox" class="row-cb" data-idx="${idx}"></td>
             <td>${name}</td>
             <td>${catLabel}</td>
-            <td>${getFructoseRange(item)}</td>
             <td>${getGlucoseRange(item)}</td>
-            <td>${getRatioRangeHtml(item)}</td>
+            <td>${getFructoseRange(item)}</td>
             <td>${getSorbitRange(item)}</td>
+            <td>${getRatioRangeHtml(item)}</td>
             <td><span class="source-badges">${sourceBadges}</span></td>
             <td>${conflict ? '<span class="conflict-icon">⚠️</span>' : '✓'}</td>
         `;
@@ -450,10 +450,10 @@ function exportPDF() {
         <option value="none">${t("sortNone")}</option>
         <option value="food">${t("colFood")}</option>
         <option value="category">${t("colCategory")}</option>
-        <option value="fructose">${t("colFructose")}</option>
         <option value="glucose">${t("colGlucose")}</option>
-        <option value="ratio">${t("colRatio")}</option>
+        <option value="fructose">${t("colFructose")}</option>
         <option value="sorbit">${t("colSorbit")}</option>
+        <option value="ratio">${t("colRatio")}</option>
     `;
     document.getElementById("lbl-sort-asc").textContent = t("sortAsc");
     document.getElementById("lbl-sort-desc").textContent = t("sortDesc");
@@ -531,10 +531,10 @@ function doExport() {
     const headers = [];
     if (cols.food) headers.push(t("colFood"));
     if (cols.category) headers.push(t("colCategory"));
-    if (cols.fructose) headers.push(t("colFructose"));
     if (cols.glucose) headers.push(t("colGlucose"));
-    if (cols.ratio) headers.push(t("colRatio"));
+    if (cols.fructose) headers.push(t("colFructose"));
     if (cols.sorbit) headers.push(t("colSorbit"));
+    if (cols.ratio) headers.push(t("colRatio"));
     if (cols.sources) headers.push(t("colSources"));
     if (cols.conflict) headers.push(t("colConflict"));
 
@@ -546,10 +546,10 @@ function doExport() {
         const conflict = hasConflict(item) ? t("yes") : t("no");
         if (cols.food) row.push(name);
         if (cols.category) row.push(catLabel);
-        if (cols.fructose) row.push(getFructoseRange(item));
         if (cols.glucose) row.push(getGlucoseRange(item));
-        if (cols.ratio) row.push(getRatioRange(item));
+        if (cols.fructose) row.push(getFructoseRange(item));
         if (cols.sorbit) row.push(getSorbitRange(item));
+        if (cols.ratio) row.push(getRatioRange(item));
         if (cols.sources) row.push(sourceIds);
         if (cols.conflict) row.push(conflict);
         return row;
