@@ -10,6 +10,7 @@ const i18n = {
         info1: "Die Werte in dieser Tabelle stammen aus verschiedenen Quellen und können sich unterscheiden. Unterschiede entstehen durch verschiedene Messmethoden, Reifegrade und Sorten.",
         info2: 'Einträge mit abweichenden Werten zwischen den Quellen sind <span class="conflict-marker">gelb markiert</span>.',
         info3: "Alle Angaben in Gramm pro 100g Lebensmittel, sofern nicht anders angegeben.",
+        info4: 'G/F Verhältnis = Glucose geteilt durch Fructose. Je höher, desto besser verträglich; Werte <span class="ratio-good">über 1</span> sind grün markiert.',
         filterTitle: "Filter",
         allCategories: "Alle Kategorien",
         catObst: "Obst",
@@ -24,7 +25,7 @@ const i18n = {
         thCategory: "Kategorie",
         thFructose: "Fructose (g/100g)",
         thGlucose: "Glucose (g/100g)",
-        thRatio: "F/G Verhältnis",
+        thRatio: "G/F Verhältnis",
         thSorbit: "Sorbit (g/100g)",
         thSources: "Quellen",
         thConflict: "Abweichung",
@@ -42,7 +43,7 @@ const i18n = {
         colCategory: "Kategorie",
         colFructose: "Fructose",
         colGlucose: "Glucose",
-        colRatio: "F/G Verhältnis",
+        colRatio: "G/F Verhältnis",
         colSorbit: "Sorbit",
         colSources: "Quellen",
         colConflict: "Abweichung",
@@ -64,6 +65,7 @@ const i18n = {
         info1: "Values in this table come from different sources and may vary due to measurement methods, ripeness, and variety of foods.",
         info2: 'Entries with differing values between sources are <span class="conflict-marker">highlighted in yellow</span>.',
         info3: "All values in grams per 100g of food, unless otherwise noted.",
+        info4: 'G/F ratio = glucose divided by fructose. Higher is better tolerated; values <span class="ratio-good">above 1</span> are marked green.',
         filterTitle: "Filter",
         allCategories: "All categories",
         catObst: "Fruit",
@@ -78,7 +80,7 @@ const i18n = {
         thCategory: "Category",
         thFructose: "Fructose (g/100g)",
         thGlucose: "Glucose (g/100g)",
-        thRatio: "F/G Ratio",
+        thRatio: "G/F Ratio",
         thSorbit: "Sorbitol (g/100g)",
         thSources: "Sources",
         thConflict: "Conflict",
@@ -96,7 +98,7 @@ const i18n = {
         colCategory: "Category",
         colFructose: "Fructose",
         colGlucose: "Glucose",
-        colRatio: "F/G Ratio",
+        colRatio: "G/F Ratio",
         colSorbit: "Sorbitol",
         colSources: "Sources",
         colConflict: "Conflict",
@@ -134,6 +136,7 @@ function updateUI() {
     document.getElementById("info-text-1").textContent = t("info1");
     document.getElementById("info-text-2").innerHTML = t("info2");
     document.getElementById("info-text-3").textContent = t("info3");
+    document.getElementById("info-text-4").innerHTML = t("info4");
     document.getElementById("filter-title").textContent = t("filterTitle");
     document.getElementById("opt-all").textContent = t("allCategories");
     document.getElementById("opt-obst").textContent = t("catObst");
@@ -202,13 +205,37 @@ function getGlucoseRange(item) {
     return min.toFixed(1) + " – " + max.toFixed(1);
 }
 
+// G/F ratio per source, calculated only from the glucose and fructose values the
+// source itself provides (no source publishes G/F; the published F/G is not reused)
+function getGfValues(item) {
+    return Object.values(item.values).map(v => {
+        if (v.f !== null && v.f !== undefined && v.f > 0 && v.g !== null && v.g !== undefined) return v.g / v.f;
+        return null;
+    }).filter(v => v !== null);
+}
+
+function getRatioBounds(item) {
+    const gfValues = getGfValues(item);
+    if (gfValues.length === 0) return null;
+    const min = Math.min(...gfValues);
+    const max = Math.max(...gfValues);
+    if (min === max || (max - min) < 0.05) return [min];
+    return [min, max];
+}
+
 function getRatioRange(item) {
-    const rValues = Object.values(item.values).map(v => v.r).filter(v => v !== null && v !== undefined);
-    if (rValues.length === 0) return "-";
-    const min = Math.min(...rValues);
-    const max = Math.max(...rValues);
-    if (min === max || (max - min) < 0.05) return min.toFixed(2);
-    return min.toFixed(2) + " – " + max.toFixed(2);
+    const bounds = getRatioBounds(item);
+    if (!bounds) return "-";
+    return bounds.map(v => v.toFixed(2)).join(" – ");
+}
+
+function getRatioRangeHtml(item) {
+    const bounds = getRatioBounds(item);
+    if (!bounds) return "-";
+    return bounds.map(v => {
+        const text = v.toFixed(2);
+        return parseFloat(text) > 1 ? `<span class="ratio-good">${text}</span>` : text;
+    }).join(" – ");
 }
 
 // === TABLE RENDERING ===
@@ -249,6 +276,18 @@ function updateSortIcons() {
     });
 }
 
+// Items without a value (-Infinity) always go to the end, regardless of direction
+function compareSortValues(valA, valB, dir) {
+    if (typeof valA === "string" && typeof valB === "string") {
+        const cmp = valA.localeCompare(valB, currentLang);
+        return dir === "desc" ? -cmp : cmp;
+    }
+    if (valA === -Infinity && valB === -Infinity) return 0;
+    if (valA === -Infinity) return 1;
+    if (valB === -Infinity) return -1;
+    return dir === "desc" ? valB - valA : valA - valB;
+}
+
 function getSortedData() {
     const indexed = FOOD_DATA.map((item, idx) => ({ item, idx }));
 
@@ -257,19 +296,7 @@ function getSortedData() {
         indexed.sort((a, b) => {
             const valA = getSortValue(a.item, tableSortField);
             const valB = getSortValue(b.item, tableSortField);
-            let cmp;
-            if (typeof valA === "string" && typeof valB === "string") {
-                cmp = valA.localeCompare(valB, currentLang);
-            } else {
-                if (valA === -Infinity && valB === -Infinity) cmp = 0;
-                else if (valA === -Infinity) cmp = 1;
-                else if (valB === -Infinity) cmp = -1;
-                else if (valA === Infinity && valB === Infinity) cmp = 0;
-                else if (valA === Infinity) cmp = 1;
-                else if (valB === Infinity) cmp = -1;
-                else cmp = valA - valB;
-            }
-            return tableSortDir === "desc" ? -cmp : cmp;
+            return compareSortValues(valA, valB, tableSortDir);
         });
     } else {
         // Default: sort by category order then alphabetically
@@ -326,7 +353,7 @@ function renderTable() {
             <td>${catLabel}</td>
             <td>${getFructoseRange(item)}</td>
             <td>${getGlucoseRange(item)}</td>
-            <td>${getRatioRange(item)}</td>
+            <td>${getRatioRangeHtml(item)}</td>
             <td>${getSorbitRange(item)}</td>
             <td><span class="source-badges">${sourceBadges}</span></td>
             <td>${conflict ? '<span class="conflict-icon">⚠️</span>' : '✓'}</td>
@@ -378,7 +405,7 @@ function toggleAll(masterCb) {
 
 // Helper: get numeric sort value for an item by field
 // For fructose, glucose, sorbit: use MAX value (Oberwert)
-// For ratio: use MIN value (Unterwert)
+// For G/F ratio: use MIN value (Unterwert)
 function getSortValue(item, field) {
     const values = Object.values(item.values);
     if (field === "fructose") {
@@ -391,8 +418,8 @@ function getSortValue(item, field) {
         const nums = values.map(v => v.s).filter(v => v !== null && v !== undefined);
         return nums.length > 0 ? Math.max(...nums) : -Infinity;
     } else if (field === "ratio") {
-        const nums = values.map(v => v.r).filter(v => v !== null && v !== undefined);
-        return nums.length > 0 ? Math.min(...nums) : Infinity;
+        const nums = getGfValues(item);
+        return nums.length > 0 ? Math.min(...nums) : -Infinity;
     } else if (field === "food") {
         return (item.name[currentLang] || item.name.de).toLowerCase();
     } else if (field === "category") {
@@ -467,20 +494,7 @@ function doExport() {
         dataToExport = [...dataToExport].sort((a, b) => {
             const valA = getSortValue(a, sortField);
             const valB = getSortValue(b, sortField);
-            let cmp;
-            if (typeof valA === "string" && typeof valB === "string") {
-                cmp = valA.localeCompare(valB, currentLang);
-            } else {
-                // Handle -Infinity / Infinity: push items without values to end
-                if (valA === -Infinity && valB === -Infinity) cmp = 0;
-                else if (valA === -Infinity) cmp = 1;
-                else if (valB === -Infinity) cmp = -1;
-                else if (valA === Infinity && valB === Infinity) cmp = 0;
-                else if (valA === Infinity) cmp = 1;
-                else if (valB === Infinity) cmp = -1;
-                else cmp = valA - valB;
-            }
-            return sortDir === "desc" ? -cmp : cmp;
+            return compareSortValues(valA, valB, sortDir);
         });
     }
 
@@ -499,7 +513,7 @@ function doExport() {
                 const values = Object.values(item.values);
                 if (col === "fructose") return values.some(v => v.f !== null && v.f !== undefined);
                 if (col === "glucose") return values.some(v => v.g !== null && v.g !== undefined);
-                if (col === "ratio") return values.some(v => v.r !== null && v.r !== undefined);
+                if (col === "ratio") return getGfValues(item).length > 0;
                 if (col === "sorbit") return values.some(v => v.s !== null && v.s !== undefined);
                 return false;
             });
@@ -549,6 +563,12 @@ function doExport() {
         headStyles: { fillColor: [44, 122, 63] },
         alternateRowStyles: { fillColor: [245, 250, 245] },
         didParseCell: function(data) {
+            if (cols.ratio && data.section === "body") {
+                const ratioColIdx = headers.indexOf(t("colRatio"));
+                if (data.column.index === ratioColIdx && parseFloat(data.cell.raw) > 1) {
+                    data.cell.styles.fillColor = [200, 240, 200];
+                }
+            }
             if (cols.conflict && data.section === "body") {
                 const conflictColIdx = headers.indexOf(t("colConflict"));
                 if (data.column.index === conflictColIdx && data.cell.raw === t("yes")) {
@@ -576,8 +596,15 @@ function doExport() {
     doc.save("fructosegehalt-lebensmittel.pdf");
 }
 
+function renderSources() {
+    document.getElementById("sources-list").innerHTML = Object.values(SOURCES).map(src =>
+        `<li><a href="${src.url}" target="_blank" rel="noopener">${src.name}</a>${src.type === "pdf" ? " (PDF)" : ""}</li>`
+    ).join("");
+}
+
 // === INIT ===
 document.addEventListener("DOMContentLoaded", function() {
+    renderSources();
     renderTable();
     renderConflicts();
 });

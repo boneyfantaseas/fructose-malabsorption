@@ -34,6 +34,7 @@
                 <p id="info-text-1">Die Werte in dieser Tabelle stammen aus verschiedenen Quellen und können sich unterscheiden. Unterschiede entstehen durch verschiedene Messmethoden, Reifegrade und Sorten der Lebensmittel.</p>
                 <p id="info-text-2">Einträge mit abweichenden Werten zwischen den Quellen sind <span class="conflict-marker">gelb markiert</span>.</p>
                 <p id="info-text-3">Alle Angaben in Gramm pro 100g Lebensmittel, sofern nicht anders angegeben.</p>
+                <p id="info-text-4"></p>
             </div>
         </section>
 
@@ -66,7 +67,7 @@
                         <th id="th-category" class="sortable" onclick="sortTable('category')">Kategorie <span class="sort-icon" id="sort-icon-category"></span></th>
                         <th id="th-fructose" class="sortable" onclick="sortTable('fructose')">Fructose (g/100g) <span class="sort-icon" id="sort-icon-fructose"></span></th>
                         <th id="th-glucose" class="sortable" onclick="sortTable('glucose')">Glucose (g/100g) <span class="sort-icon" id="sort-icon-glucose"></span></th>
-                        <th id="th-ratio" class="sortable" onclick="sortTable('ratio')">F/G Verhältnis <span class="sort-icon" id="sort-icon-ratio"></span></th>
+                        <th id="th-ratio" class="sortable" onclick="sortTable('ratio')">G/F Verhältnis <span class="sort-icon" id="sort-icon-ratio"></span></th>
                         <th id="th-sorbit" class="sortable" onclick="sortTable('sorbit')">Sorbit (g/100g) <span class="sort-icon" id="sort-icon-sorbit"></span></th>
                         <th id="th-sources">Quellen</th>
                         <th id="th-conflict">Abweichung</th>
@@ -79,14 +80,7 @@
 
         <section id="sources-section">
             <h2 id="sources-title">Quellen</h2>
-            <ol id="sources-list">
-                <li><a href="https://foodintolerances.org/de/nahrungsbestandteile/fructose-nahrungstabellen" target="_blank">Food Intolerances – Fructose Nahrungstabellen</a> (foodintolerances.org)</li>
-                <li><a href="https://www.netdoktor.de/krankheiten/fruktoseintoleranz/tabelle/" target="_blank">NetDoktor – Fruktoseintoleranz Tabelle</a> (netdoktor.de, Quelle: Klinische Ernährungsmedizin, 2010)</li>
-                <li><a href="https://gastro-bw.ch/wp-content/uploads/2019/08/Fruktosemalabsorption.pdf" target="_blank">Gastro BW – Fruktosemalabsorption (PDF, 2019)</a></li>
-                <li><a href="https://www.infomedizin.de/fileadmin/user_upload/PDF/fructosegehalt-obst-gemuese.pdf" target="_blank">Infomedizin – Fructosegehalt Obst & Gemüse (PDF)</a></li>
-                <li><a href="https://www.aerztehaushiltrup-kinderaerzte.de/wp-content/uploads/2022/06/Fruktosemalabsorbtion.pdf" target="_blank">Ärztehaus Hiltrup – Fruktosemalabsorption (PDF, 2022)</a></li>
-                <li><a href="https://www.p7g.de/wp-content/uploads/2022/06/Fruktosetabelle.pdf" target="_blank">P7G – Fruktosetabelle (PDF, 2022)</a></li>
-            </ol>
+            <ol id="sources-list"></ol>
         </section>
 
         <section id="conflicts-section">
@@ -105,7 +99,7 @@
                     <label><input type="checkbox" id="col-category" checked> <span id="lbl-col-category">Kategorie</span></label>
                     <label><input type="checkbox" id="col-fructose" checked> <span id="lbl-col-fructose">Fructose</span></label>
                     <label><input type="checkbox" id="col-glucose" checked> <span id="lbl-col-glucose">Glucose</span></label>
-                    <label><input type="checkbox" id="col-ratio" checked> <span id="lbl-col-ratio">F/G Verhältnis</span></label>
+                    <label><input type="checkbox" id="col-ratio" checked> <span id="lbl-col-ratio">G/F Verhältnis</span></label>
                     <label><input type="checkbox" id="col-sorbit" checked> <span id="lbl-col-sorbit">Sorbit</span></label>
                     <label><input type="checkbox" id="col-sources" checked> <span id="lbl-col-sources">Quellen</span></label>
                     <label><input type="checkbox" id="col-conflict"> <span id="lbl-col-conflict">Abweichung</span></label>

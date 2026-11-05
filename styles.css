@@ -207,7 +207,7 @@ td {
     font-size: 0.9rem;
 }
 
-tr:hover {
+tbody tr:hover {
     background: #f8fdf8;
 }
 
@@ -234,6 +234,13 @@ tr.category-header:hover {
     padding: 10px 12px !important;
     border-bottom: 2px solid #4caf50;
     letter-spacing: 0.02em;
+}
+
+.ratio-good {
+    background: #d4f5d4;
+    color: #1e5c2e;
+    padding: 1px 5px;
+    border-radius: 3px;
 }
 
 .source-badges {
